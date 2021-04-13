@@ -66,9 +66,9 @@ export class HeroService {
     page$ = this.pageBS.asObservable();
 
     private params$ = combineLatest([
-        this.search$,
+        this.search$.pipe(debounceTime(500)),
         this.limit$,
-        this.page$,
+        this.page$.pipe(debounceTime(500)),
     ]).pipe(
         distinctUntilChanged(
             (current, previous) =>
@@ -88,7 +88,6 @@ export class HeroService {
     );
 
     private heroesResponse$: Observable<any> = this.params$.pipe(
-        debounceTime(500),
         switchMap((params: any) => this.http.get(HERO_API, { params })),
         shareReplay(1),
     );
