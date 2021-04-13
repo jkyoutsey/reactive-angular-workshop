@@ -1,7 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { debounceTime, map, shareReplay, switchMap } from 'rxjs/operators';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    map,
+    shareReplay,
+    switchMap,
+} from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface Hero {
@@ -64,6 +70,10 @@ export class HeroService {
         this.limit$,
         this.page$,
     ]).pipe(
+        distinctUntilChanged(
+            (current, previous) =>
+                JSON.stringify(current) === JSON.stringify(previous),
+        ),
         map(([search, limit, page]) => {
             const params: any = {
                 apikey: environment.MARVEL_API.PUBLIC_KEY,
